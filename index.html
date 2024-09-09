@@ -3,74 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Token Generator Tool</title>
+    <title>Discord Account Generator</title>
     <style>
         body {
-            background-color: #000;
-            color: #fff;
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background-color: #f4f4f4;
         }
         .container {
-            width: 80%;
-            max-width: 600px;
-            background: #111;
+            background: #fff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             text-align: center;
         }
         input, button {
-            margin: 10px 0;
             padding: 10px;
-            border: none;
+            margin: 5px;
+            border: 1px solid #ddd;
             border-radius: 5px;
         }
-        input[type="text"], input[type="password"] {
-            width: calc(100% - 22px);
-        }
         button {
-            background: #444;
+            background: #28a745;
             color: #fff;
+            border: none;
             cursor: pointer;
         }
         button:hover {
-            background: #555;
+            background: #218838;
         }
-        .hidden {
-            display: none;
-        }
-        #app {
-            display: none;
-        }
-        .status {
-            margin-top: 20px;
+        pre {
+            text-align: left;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div id="login" class="container">
-        <h1>Discord Token Tool Login</h1>
-        <form id="loginForm">
-            <input type="password" id="password" placeholder="Enter password" required>
-            <button type="submit">Login</button>
+    <div class="container">
+        <h1>Discord Account Generator</h1>
+        <form id="generate-form">
+            <input type="number" id="count" placeholder="Number of accounts" required>
+            <button type="submit">Generate Accounts</button>
         </form>
+        <pre id="result"></pre>
     </div>
-
-    <div id="app" class="container">
-        <h1>Discord Token Generator</h1>
-        <form id="mainForm">
-            <label for="serverLink">Server Invite Link:</label>
-            <input type="text" id="serverLink" placeholder="https://discord.gg/YOUR_INVITE" required>
-            <button type="submit">Start Process</button>
-        </form>
-        <div id="status" class="status"></div>
-    </div>
-
-    <script src="script.js"></script>
+    <script>
+        document.getElementById('generate-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const count = document.getElementById('count').value;
+            const response = await fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ count })
+            });
+            const data = await response.json();
+            document.getElementById('result').textContent = JSON.stringify(data.accounts, null, 2);
+        });
+    </script>
 </body>
 </html>
+
