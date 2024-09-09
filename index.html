@@ -3,46 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Creator with CAPTCHA Solver</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Discord Token Generator Tool</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            background: #111;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 22px);
+        }
+        button {
+            background: #444;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #555;
+        }
+        .hidden {
+            display: none;
+        }
+        #app {
+            display: none;
+        }
+        .status {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Discord Account Creator</h1>
-    <form id="generatorForm">
-        <label for="invite">Server Invite Link:</label>
-        <input type="text" id="invite" value="https://discord.gg/YOUR_INVITE"><br><br>
-        <button type="submit">Generate Accounts</button>
-    </form>
-    <div id="result"></div>
+    <div id="login" class="container">
+        <h1>Discord Token Tool Login</h1>
+        <form id="loginForm">
+            <input type="password" id="password" placeholder="Enter password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 
-    <script>
-        document.getElementById('generatorForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
-            const invite = document.getElementById('invite').value;
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = 'Generating accounts and solving CAPTCHAs...';
+    <div id="app" class="container">
+        <h1>Discord Token Generator</h1>
+        <form id="mainForm">
+            <label for="serverLink">Server Invite Link:</label>
+            <input type="text" id="serverLink" placeholder="https://discord.gg/YOUR_INVITE" required>
+            <button type="submit">Start Process</button>
+        </form>
+        <div id="status" class="status"></div>
+    </div>
 
-            try {
-                const response = await fetch('http://127.0.0.1:5000/start', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        serverLink: invite
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    resultDiv.innerHTML = `Generation Completed! Joined the server. Accounts joined: ${data.joinedCount}`;
-                } else {
-                    resultDiv.innerHTML = 'Error: ' + response.statusText;
-                }
-            } catch (error) {
-                resultDiv.innerHTML = 'Error: ' + error.message;
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
