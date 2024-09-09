@@ -1,73 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Account Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        input, button {
-            padding: 10px;
-            margin: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            background: #28a745;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #218838;
-        }
-        pre {
-            text-align: left;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Generator</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Discord Account Generator</h1>
-        <form id="generate-form">
-            <input type="number" id="count" placeholder="Number of accounts" required>
-            <button type="submit">Generate Accounts</button>
-        </form>
-        <pre id="result"></pre>
-    </div>
-    <script>
-        document.getElementById('generate-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const count = document.getElementById('count').value;
-            const response = await fetch('/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ count })
-            });
-            const data = await response.json();
-            document.getElementById('result').textContent = JSON.stringify(data.accounts, null, 2);
-        });
-    </script>
+  <h1>Account Generator</h1>
+  <button id="generate">Generate Account</button>
+  <pre id="output"></pre>
+  <script src="script.js"></script>
 </body>
 </html>
-
