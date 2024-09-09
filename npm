@@ -1,0 +1,3 @@
+mkdir account-generator-website
+cd account-generator-website
+npm init -y
