@@ -1,5 +1,5 @@
 async function createAccountsAndSolveCaptcha(mode, email, humanize, threads, invite, output) {
-    console.log(`Creating accounts and solving CAPTCHAs...`);
+    console.log(`Creating accounts and joining servers...`);
 
     try {
         const response = await fetch('http://127.0.0.1:5000/start', {
@@ -22,4 +22,3 @@ async function createAccountsAndSolveCaptcha(mode, email, humanize, threads, inv
         document.getElementById('result').innerHTML = `Error: ${error.message}`;
     }
 }
-
