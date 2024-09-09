@@ -3,63 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Account Creator</title>
+    <title>Account Creator with CAPTCHA Solver</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="login-container">
-        <h2>Login</h2>
-        <input type="password" id="password" placeholder="Enter password">
-        <button id="login-button">Login</button>
-        <div id="login-error" style="color: red;"></div>
-    </div>
-
-    <div id="main-container" style="display: none;">
-        <h1>Discord Account Creator</h1>
-        <form id="generatorForm">
-            <label for="serverLink">Server Invite Link:</label>
-            <input type="text" id="serverLink" placeholder="https://discord.gg/YOUR_INVITE" required><br><br>
-
-            <button type="submit">Start Creating Accounts</button>
-        </form>
-
-        <div id="result"></div>
-        <div id="joined-count"></div>
-    </div>
+    <h1>Discord Account Creator</h1>
+    <form id="generatorForm">
+        <label for="invite">Server Invite Link:</label>
+        <input type="text" id="invite" value="https://discord.gg/YOUR_INVITE"><br><br>
+        <button type="submit">Generate Accounts</button>
+    </form>
+    <div id="result"></div>
 
     <script>
-        document.getElementById('login-button').addEventListener('click', function() {
-            const password = document.getElementById('password').value;
-            if (password === 'zane123') {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('main-container').style.display = 'block';
-            } else {
-                document.getElementById('login-error').innerText = 'Incorrect password';
-            }
-        });
-
-        document.getElementById('generatorForm').addEventListener('submit', async function(event) {
+        document.getElementById('generatorForm').addEventListener('submit', async function (event) {
             event.preventDefault();
-
-            const serverLink = document.getElementById('serverLink').value;
+            const invite = document.getElementById('invite').value;
             const resultDiv = document.getElementById('result');
-            const joinedCountDiv = document.getElementById('joined-count');
-
-            resultDiv.innerHTML = 'Creating accounts and joining server...';
-            joinedCountDiv.innerHTML = '';
+            resultDiv.innerHTML = 'Generating accounts and solving CAPTCHAs...';
 
             try {
                 const response = await fetch('http://127.0.0.1:5000/start', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ serverLink })
+                    body: JSON.stringify({
+                        serverLink: invite
+                    })
                 });
 
-                const data = await response.json();
-                resultDiv.innerHTML = 'Accounts created and joined successfully!';
-                joinedCountDiv.innerHTML = `Total accounts joined: ${data.joinedCount}`;
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `Generation Completed! Joined the server. Accounts joined: ${data.joinedCount}`;
+                } else {
+                    resultDiv.innerHTML = 'Error: ' + response.statusText;
+                }
             } catch (error) {
                 resultDiv.innerHTML = 'Error: ' + error.message;
             }
