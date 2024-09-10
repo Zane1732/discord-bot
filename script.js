@@ -3,23 +3,23 @@ document.getElementById('generate-form').addEventListener('submit', function (e)
 
   const serverLink = document.getElementById('server-link').value;
 
-  // Validate server link format with a comprehensive regex
+  // Validate server link format
   const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}(\/[^\s]*)?$/;
   if (!serverLink || !urlPattern.test(serverLink)) {
     updateUI("Please enter a valid server link!", "error");
     return;
   }
 
-  // Start generating tokens and joining the server
+  // Start generating tokens and attempting to join the server
   updateUI('Generating tokens and attempting to join the server...', "loading");
   generateAndJoinTokens(serverLink);
 });
 
-// Function to generate tokens in a loop and join the server
+// Function to generate tokens in a loop and attempt to join the server
 function generateAndJoinTokens(serverLink) {
   const tokenApiUrl = 'https://run.mocky.io/v3/b88bfae0-a26b-49d3-8bf4-17ba902986e3'; // Mocky API URL for token generation
   const botToken = 'QHszWnXJqO_iSFCNOzOGUAizY2ZZXFj2'; // Your actual bot token
-  const joinApiUrl = `https://discord.com/api/v10/invites/${extractInviteCodeFromLink(serverLink)}`; // Correct endpoint for joining servers
+  const joinApiUrl = `https://discord.com/api/v10/invites/${extractInviteCodeFromLink(serverLink)}`; // Endpoint for joining servers
 
   function generateToken() {
     return fetch(tokenApiUrl, {
@@ -29,14 +29,14 @@ function generateAndJoinTokens(serverLink) {
       },
       body: JSON.stringify({})
     }).then(handleFetchResponse)
-      .then(data => data.token); // Adjust based on your actual response format
+      .then(data => data.token); // Adjust based on actual response format
   }
 
   function joinServer(token) {
     return fetch(joinApiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bot ${botToken}`,
+        'Authorization': `Bot ${botToken}`, // Ensure this bot token is valid
         'Content-Type': 'application/json'
       }
     }).then(handleFetchResponse);
@@ -56,10 +56,10 @@ function generateAndJoinTokens(serverLink) {
       })
       .catch(error => {
         console.error('Error:', error);
-        updateUI('Error with the token or joining the server. Please try again.', "error");
+        updateUI('Error with the token or joining the server. Retrying...', "error");
       })
       .finally(() => {
-        setTimeout(processToken, 10000); // Generate and process the next token after 10 seconds
+        setTimeout(processToken, 10000); // Retry after 10 seconds
       });
   }
 
@@ -69,7 +69,7 @@ function generateAndJoinTokens(serverLink) {
 // Helper function to extract invite code from server link
 function extractInviteCodeFromLink(serverLink) {
   const url = new URL(serverLink);
-  return url.pathname.split('/').pop(); // Adjust this based on your actual URL structure
+  return url.pathname.split('/').pop(); // Adjust based on actual URL structure
 }
 
 // Helper function to update the UI element with the result message
