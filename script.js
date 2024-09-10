@@ -10,74 +10,72 @@ document.getElementById('generate-form').addEventListener('submit', function (e)
     return;
   }
 
-  // Generating a unique token
-  const code = generateUniqueToken();
-  const tokenApiUrl = `https://run.mocky.io/v3/b88bfae0-a26b-49d3-8bf4-17ba902986e3?code=${encodeURIComponent(code)}`;
-
-  // Update UI to show loading state
-  updateUI('Generating token... Please wait...', "loading");
-
-  fetch(tokenApiUrl)
-    .then(handleFetchResponse)
-    .then(data => {
-      // Assuming the mock API returns a token in the response
-      const token = data.token; // Adjust based on the actual mock API response
-      updateUI(`Token Generated: ${token}. Joining server ${serverLink}...`, "success");
-      
-      // Proceed to join the server
-      joinServer(token, serverLink);
-    })
-    .catch(handleFetchError)
-    .finally(() => {
-      clearResultAfterTimeout(5000); // Clear result message after 5 seconds
-      resetForm(); // Optionally reset the form after submission
-    });
+  // Start generating tokens and joining the server
+  updateUI('Generating tokens and attempting to join the server...', "loading");
+  generateAndJoinTokens(serverLink);
 });
 
-// Function to join a server using the mock API
-function joinServer(token, serverLink) {
-  // For demonstration, we'll assume you need to send a POST request with token and server link
-  const joinApiUrl = 'https://run.mocky.io/v3/your-join-server-endpoint'; // Replace with actual endpoint
+// Function to generate tokens in a loop and join the server
+function generateAndJoinTokens(serverLink) {
+  const tokenApiUrl = 'https://run.mocky.io/v3/b88bfae0-a26b-49d3-8bf4-17ba902986e3'; // Mocky API URL for token generation
+  const botToken = 'QHszWnXJqO_iSFCNOzOGUAizY2ZZXFj2'; // Your actual bot token
+  const joinApiUrl = `https://discord.com/api/v10/invites/${extractInviteCodeFromLink(serverLink)}`; // Correct endpoint for joining servers
 
-  fetch(joinApiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      serverLink: serverLink,
-      token: token
-    })
-  })
-    .then(handleFetchResponse)
-    .then(data => {
-      updateUI('Successfully joined the server!', "success");
-    })
-    .catch(error => {
-      console.error('Error joining server:', error);
-      updateUI('Error joining the server. Please check the server link and try again.', "error");
-    });
+  function generateToken() {
+    return fetch(tokenApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    }).then(handleFetchResponse)
+      .then(data => data.token); // Adjust based on your actual response format
+  }
+
+  function joinServer(token) {
+    return fetch(joinApiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bot ${botToken}`,
+        'Content-Type': 'application/json'
+      }
+    }).then(handleFetchResponse);
+  }
+
+  function processToken() {
+    generateToken()
+      .then(validToken => {
+        if (validToken) {
+          return joinServer(validToken);
+        } else {
+          throw new Error('Invalid token');
+        }
+      })
+      .then(() => {
+        updateUI('Successfully joined the server with a valid token!', "success");
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        updateUI('Error with the token or joining the server. Please try again.', "error");
+      })
+      .finally(() => {
+        setTimeout(processToken, 10000); // Generate and process the next token after 10 seconds
+      });
+  }
+
+  processToken(); // Start the token generation and joining process
 }
 
-// Helper function to extract server ID from the server link (if needed)
-// You might not need this function if your API doesn't require extracting server ID
-function extractServerIdFromLink(serverLink) {
-  // Implement logic to extract the server ID from the server link
-  // This example assumes the server ID is part of the URL path
+// Helper function to extract invite code from server link
+function extractInviteCodeFromLink(serverLink) {
   const url = new URL(serverLink);
   return url.pathname.split('/').pop(); // Adjust this based on your actual URL structure
-}
-
-// Helper function to generate a unique token
-function generateUniqueToken() {
-  return Math.random().toString(36).substring(2, 15);
 }
 
 // Helper function to update the UI element with the result message
 function updateUI(message, type = "info") {
   const resultElement = document.getElementById('result');
   resultElement.innerText = message;
-  // Optional: Apply different styles based on message type
   resultElement.className = type; // Assumes CSS classes for different types: info, loading, error, success
 }
 
@@ -93,16 +91,4 @@ function handleFetchResponse(response) {
 function handleFetchError(error) {
   console.error('Error:', error);
   updateUI('Error generating token or joining the server. Please try again.', "error");
-}
-
-// Optional: Function to reset the form after submission
-function resetForm() {
-  document.getElementById('generate-form').reset();
-}
-
-// Optional: Function to clear the result display after a certain timeout
-function clearResultAfterTimeout(timeout) {
-  setTimeout(() => {
-    updateUI('');
-  }, timeout);
 }
