@@ -1,18 +1,70 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+  background: radial-gradient(circle, #0d0d0d, #151515);
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  color: #fff;
   text-align: center;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 16px;
+.container {
+  margin-top: 50px;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 15px;
+  box-shadow: 0px 0px 15px 5px rgba(255, 0, 0, 0.7);
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-pre {
-  margin-top: 20px;
-  text-align: left;
-  background-color: #f4f4f4;
+h1 {
+  font-size: 3em;
+  color: #e62429;
+  text-shadow: 2px 2px 5px black;
+}
+
+h2 {
+  color: #1f8eed;
+  text-shadow: 1px 1px 3px black;
+}
+
+form {
+  margin: 20px 0;
+}
+
+input, button {
   padding: 10px;
-  border: 1px solid #ddd;
+  border-radius: 5px;
+  border: none;
+  margin: 5px;
+  font-size: 1em;
+}
+
+input {
+  width: 60%;
+  box-shadow: 0px 0px 5px 2px rgba(0, 102, 255, 0.5);
+}
+
+button {
+  background-color: #e62429;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0px 0px 10px 3px rgba(255, 0, 0, 0.7);
+}
+
+#features-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 30px;
+}
+
+#features-list li {
+  margin: 10px 0;
+  font-size: 1.2em;
+  color: #1f8eed;
+}
+
+#result {
+  margin-top: 20px;
+  color: lime;
+  font-size: 1.5em;
 }
