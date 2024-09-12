@@ -1,70 +1,64 @@
 body {
-  background: radial-gradient(circle, #0d0d0d, #151515);
-  font-family: 'Comic Sans MS', cursive, sans-serif;
-  color: #fff;
-  text-align: center;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    background: black;
+    color: neongreen;
 }
 
 .container {
-  margin-top: 50px;
-  padding: 20px;
-  background-color: #222;
-  border-radius: 15px;
-  box-shadow: 0px 0px 15px 5px rgba(255, 0, 0, 0.7);
-  width: 50%;
-  margin-left: auto;
-  margin-right: auto;
+    text-align: center;
+    animation: sparkle 10s infinite;
 }
 
-h1 {
-  font-size: 3em;
-  color: #e62429;
-  text-shadow: 2px 2px 5px black;
+.title {
+    font-size: 3rem;
+    color: lime;
+    text-shadow: 0 0 5px lime, 0 0 10px lime, 0 0 20px lime;
+    animation: glow 1.5s ease-in-out infinite alternate;
 }
 
-h2 {
-  color: #1f8eed;
-  text-shadow: 1px 1px 3px black;
+.generator {
+    margin-top: 30px;
 }
 
-form {
-  margin: 20px 0;
+#generate-btn {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    background-color: lime;
+    border: none;
+    color: black;
+    cursor: pointer;
 }
 
-input, button {
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-  margin: 5px;
-  font-size: 1em;
+#generated-account {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: lime;
 }
 
-input {
-  width: 60%;
-  box-shadow: 0px 0px 5px 2px rgba(0, 102, 255, 0.5);
+.footer {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
 }
 
-button {
-  background-color: #e62429;
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0px 0px 10px 3px rgba(255, 0, 0, 0.7);
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px lime, 0 0 10px lime, 0 0 20px lime;
+    }
+    to {
+        text-shadow: 0 0 20px lime, 0 0 30px lime, 0 0 40px lime;
+    }
 }
 
-#features-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 30px;
-}
-
-#features-list li {
-  margin: 10px 0;
-  font-size: 1.2em;
-  color: #1f8eed;
-}
-
-#result {
-  margin-top: 20px;
-  color: lime;
-  font-size: 1.5em;
+@keyframes sparkle {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
 }
