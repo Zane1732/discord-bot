@@ -11,7 +11,12 @@ class Solver {
             const encodedCode = encodeURIComponent(code);
             const mockyUrl = `${this.apiKey}?code=${encodedCode}`;
 
-            const response = await fetch(mockyUrl);
+            const response = await fetch(mockyUrl, {
+                method: 'GET',
+                headers: {
+                    'Proxy-Authorization': `Basic ${btoa(formattedProxy)}`
+                }
+            });
             const data = await response.json();
 
             if (!data.solution) {
@@ -119,9 +124,10 @@ const proxies = [
     "user:password@67.43.227.227:2659",
     "user:password@20.13.148.109:8080",
     "user:password@67.43.228.254:7271"
+    // Add more proxies here if needed
 ];
 
-// Add event listener for the Generate button
+// Event listener for the generate button
 document.getElementById('generate-btn').addEventListener('click', async function() {
     const resultDiv = document.getElementById('result');
     resultDiv.textContent = "Generating...";  // Show loading state
@@ -142,33 +148,38 @@ document.getElementById('generate-btn').addEventListener('click', async function
                 const captchaImage = document.querySelector('img.captcha');
 
                 if (captchaImage) {
-                    // Fetch the CAPTCHA image as a blob
-                    const response = await fetch(captchaImage.src);
-                    const blob = await response.blob();
+                    // Ensure the image is fully loaded
+                    if (captchaImage.complete && captchaImage.naturalHeight !== 0) {
+                        // Fetch the CAPTCHA image as a blob
+                        const response = await fetch(captchaImage.src);
+                        const blob = await response.blob();
 
-                    // Convert the blob to a base64-encoded string if required by your solver API
-                    const reader = new FileReader();
-                    reader.onloadend = function() {
-                        const base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
-                        console.log(base64String); // This is the CAPTCHA blob that can be sent to the solver
+                        // Convert the blob to a base64-encoded string if required by your solver API
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            const base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+                            console.log(base64String); // This is the CAPTCHA blob that can be sent to the solver
 
-                        // Randomly select a proxy for this example
-                        const proxy = proxies[Math.floor(Math.random() * proxies.length)];
+                            // Randomly select a proxy for this example
+                            const proxy = proxies[Math.floor(Math.random() * proxies.length)];
 
-                        // Solve CAPTCHA
-                        solver.solve(base64String, proxy).then(captchaSolution => {
-                            if (captchaSolution) {
-                                resultDiv.textContent = `Captcha solution: ${captchaSolution}`;
-                            } else {
-                                resultDiv.textContent = "Failed to solve CAPTCHA.";
-                            }
-                        }).catch(error => {
-                            resultDiv.textContent = `An error occurred: ${error}`;
-                        });
-                    };
-                    reader.readAsDataURL(blob);
+                            // Solve CAPTCHA
+                            solver.solve(base64String, proxy).then(captchaSolution => {
+                                if (captchaSolution) {
+                                    resultDiv.textContent = `Captcha solution: ${captchaSolution}`;
+                                } else {
+                                    resultDiv.textContent = "Failed to solve CAPTCHA.";
+                                }
+                            }).catch(error => {
+                                resultDiv.textContent = `An error occurred: ${error}`;
+                            });
+                        };
+                        reader.readAsDataURL(blob);
+                    } else {
+                        resultDiv.textContent = "CAPTCHA image is not fully loaded.";
+                    }
                 } else {
-                    resultDiv.textContent = "CAPTCHA image not found.";
+                    resultDiv.textContent = "CAPTCHA image element not found.";
                 }
             } else {
                 resultDiv.textContent = "Failed to get account token.";
