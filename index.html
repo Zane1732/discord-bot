@@ -3,42 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Generator by Zane</title>
+    <title>CAPTCHA Generator</title>
     <style>
         body {
-            background-color: #000;
-            color: #0f0;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: Arial, sans-serif;
+            background: #0f0f0f; /* Dark background for the hacking theme */
+            color: #ffffff;
             text-align: center;
+            margin: 0;
+            padding: 0;
         }
-        .container {
-            padding-top: 50px;
-        }
-        button {
-            background-color: #0f0;
-            color: #000;
-            font-size: 1.2em;
-            padding: 10px 20px;
+        #generate-btn {
+            background-color: #0a74da; /* Blue button for generate */
+            color: white;
             border: none;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
+            border-radius: 5px;
         }
-        button:hover {
-            background-color: #00ff00;
+        #generate-btn:hover {
+            background-color: #005bb5; /* Darker blue on hover */
         }
-        .result {
+        #result {
             margin-top: 20px;
-            font-size: 1.2em;
+            font-size: 18px;
+        }
+        img.captcha {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ffffff;
+        }
+        /* Adding a 3D effect and sparkling background */
+        @keyframes sparkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1), rgba(255,255,255,0.5) 20%, transparent);
+            opacity: 0.2;
+            animation: sparkle 1s infinite;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>This Roblox Gen was made by Zane</h1>
-        <p>If you have any issues, DM me on Discord: <strong>zane_ox0</strong></p>
-        <button id="generate-btn">Generate</button>
-        <div id="result" class="result"></div>
-    </div>
-
+    <h1>CAPTCHA Generator</h1>
+    <button id="generate-btn">Generate</button>
+    <div id="result"></div>
+    <img class="captcha" src="URL_TO_CAPTCHA_IMAGE" alt="CAPTCHA">
     <script src="script.js"></script>
+</body>
+</html>
+
 </body>
 </html>
