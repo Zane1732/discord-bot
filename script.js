@@ -112,8 +112,10 @@ class MailTM {
 
         const data = await response.json();
         if (response.status === 201) {
+            console.log(`Created account: ${mail}@${domain}`);
             return { status: "OK", mail: `${mail}@${domain}`, password: password };
         } else {
+            console.log(`Failed to create account: ${response.statusText}`);
             return { status: "ERROR", response: data };
         }
     }
@@ -133,7 +135,13 @@ class MailTM {
         });
 
         const data = await response.json();
-        return data.token;
+        if (response.status === 200) {
+            console.log("Got token: ", data.token);
+            return data.token;
+        } else {
+            console.log("Failed to get token: ", data.message);
+            return null;
+        }
     }
 
     async getMail(token) {
@@ -142,7 +150,9 @@ class MailTM {
                 'Authorization': `Bearer ${token}`
             }
         });
-        return await response.json();
+        const data = await response.json();
+        console.log("Received emails: ", data);
+        return data;
     }
 
     async getMailContent(token, messageId) {
@@ -151,7 +161,8 @@ class MailTM {
                 'Authorization': `Bearer ${token}`
             }
         });
-        return await response.json();
+        const data = await response.json();
+        return data;
     }
 }
 
@@ -161,30 +172,35 @@ async function main() {
     const solver = new Solver(apiKey);
     const mailTM = new MailTM();
 
-    const domain = await mailTM.getDomain();
-    const mailAccount = await mailTM.createAccount(domain);
-    console.log(`Created mail: ${mailAccount.mail}`);
+    try {
+        const domain = await mailTM.getDomain();
+        const mailAccount = await mailTM.createAccount(domain);
 
-    if (mailAccount.status === "OK") {
-        const token = await mailTM.getAccountToken(mailAccount.mail, mailAccount.password);
-        console.log(`Got token: ${token}`);
+        if (mailAccount.status === "OK") {
+            const token = await mailTM.getAccountToken(mailAccount.mail, mailAccount.password);
+            
+            if (token) {
+                // Example CAPTCHA blob data, replace with actual blob
+                const blob = "example_blob_data";
 
-        // Example CAPTCHA blob data, replace with actual blob
-        const blob = "example_blob_data";
+                // Randomly select a proxy for this example
+                const proxy = proxies[Math.floor(Math.random() * proxies.length)];
 
-        // Randomly select a proxy for this example
-        const proxy = proxies[Math.floor(Math.random() * proxies.length)];
-
-        // Solve CAPTCHA
-        const captchaSolution = await solver.solve(blob, proxy);
-        if (captchaSolution) {
-            console.log(`Captcha solution: ${captchaSolution}`);
+                // Solve CAPTCHA
+                const captchaSolution = await solver.solve(blob, proxy);
+                if (captchaSolution) {
+                    console.log(`Captcha solution: ${captchaSolution}`);
+                } else {
+                    console.log("Failed to solve CAPTCHA.");
+                }
+            }
         } else {
-            console.log("Failed to solve CAPTCHA.");
+            console.log(`Failed to create account: ${mailAccount.response}`);
         }
-    } else {
-        console.log(`Failed to create account: ${mailAccount.response}`);
+    } catch (error) {
+        console.error("An error occurred:", error);
     }
 }
 
+// Run the main function
 main();
