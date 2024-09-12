@@ -1,41 +1,3 @@
-document.getElementById('generate-btn').addEventListener('click', async function() {
-    const resultDiv = document.getElementById('result');
-    resultDiv.textContent = "Generating...";  // Show loading state
-
-    // Call the main function to generate the Roblox account or CAPTCHA solution
-    try {
-        const apiKey = "https://run.mocky.io/v3/b88bfae0-a26b-49d3-8bf4-17ba902986e3";  // Replace with your actual API key
-        const solver = new Solver(apiKey);
-        const mailTM = new MailTM();
-
-        const domain = await mailTM.getDomain();
-        const mailAccount = await mailTM.createAccount(domain);
-
-        if (mailAccount.status === "OK") {
-            const token = await mailTM.getAccountToken(mailAccount.mail, mailAccount.password);
-
-            if (token) {
-                const blob = "example_blob_data"; // Replace with actual CAPTCHA blob
-                const proxy = proxies[Math.floor(Math.random() * proxies.length)];
-
-                // Solve CAPTCHA
-                const captchaSolution = await solver.solve(blob, proxy);
-                if (captchaSolution) {
-                    resultDiv.textContent = `Captcha solution: ${captchaSolution}`;
-                } else {
-                    resultDiv.textContent = "Failed to solve CAPTCHA.";
-                }
-            } else {
-                resultDiv.textContent = "Failed to get account token.";
-            }
-        } else {
-            resultDiv.textContent = `Failed to create account: ${mailAccount.response}`;
-        }
-    } catch (error) {
-        resultDiv.textContent = `An error occurred: ${error}`;
-    }
-});
-
 // Define Solver class
 class Solver {
     constructor(apiKey) {
@@ -143,5 +105,78 @@ function randomString(length) {
 const proxies = [
     "user:password@5.161.115.29:51111",
     "user:password@23.254.231.55:80",
-    // Add more proxies here
+    "user:password@5.161.114.204:4228",
+    "user:password@198.199.86.11:8080",
+    "user:password@84.252.73.132:4444",
+    "user:password@222.89.237.101:9002",
+    "user:password@67.43.227.227:12827",
+    "user:password@141.145.214.176:80",
+    "user:password@201.134.169.214:8205",
+    "user:password@152.26.231.94:9443",
+    "user:password@8.219.97.248:80",
+    "user:password@65.108.207.6:80",
+    "user:password@135.181.154.225:80",
+    "user:password@67.43.227.227:2659",
+    "user:password@20.13.148.109:8080",
+    "user:password@67.43.228.254:7271"
 ];
+
+// Add event listener for the Generate button
+document.getElementById('generate-btn').addEventListener('click', async function() {
+    const resultDiv = document.getElementById('result');
+    resultDiv.textContent = "Generating...";  // Show loading state
+
+    try {
+        const apiKey = "https://run.mocky.io/v3/b88bfae0-a26b-49d3-8bf4-17ba902986e3";  // Replace with your actual API key
+        const solver = new Solver(apiKey);
+        const mailTM = new MailTM();
+
+        const domain = await mailTM.getDomain();
+        const mailAccount = await mailTM.createAccount(domain);
+
+        if (mailAccount.status === "OK") {
+            const token = await mailTM.getAccountToken(mailAccount.mail, mailAccount.password);
+
+            if (token) {
+                // Select the CAPTCHA element (assuming it's an image)
+                const captchaImage = document.querySelector('img.captcha');
+
+                if (captchaImage) {
+                    // Fetch the CAPTCHA image as a blob
+                    const response = await fetch(captchaImage.src);
+                    const blob = await response.blob();
+
+                    // Convert the blob to a base64-encoded string if required by your solver API
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        const base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+                        console.log(base64String); // This is the CAPTCHA blob that can be sent to the solver
+
+                        // Randomly select a proxy for this example
+                        const proxy = proxies[Math.floor(Math.random() * proxies.length)];
+
+                        // Solve CAPTCHA
+                        solver.solve(base64String, proxy).then(captchaSolution => {
+                            if (captchaSolution) {
+                                resultDiv.textContent = `Captcha solution: ${captchaSolution}`;
+                            } else {
+                                resultDiv.textContent = "Failed to solve CAPTCHA.";
+                            }
+                        }).catch(error => {
+                            resultDiv.textContent = `An error occurred: ${error}`;
+                        });
+                    };
+                    reader.readAsDataURL(blob);
+                } else {
+                    resultDiv.textContent = "CAPTCHA image not found.";
+                }
+            } else {
+                resultDiv.textContent = "Failed to get account token.";
+            }
+        } else {
+            resultDiv.textContent = `Failed to create account: ${mailAccount.response}`;
+        }
+    } catch (error) {
+        resultDiv.textContent = `An error occurred: ${error}`;
+    }
+});
