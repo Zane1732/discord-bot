@@ -1,94 +1,190 @@
-document.getElementById('generate-form').addEventListener('submit', function (e) {
-  e.preventDefault();
+// Proxy List (add your proxies here)
+const proxies = [
+    "user:password@5.161.115.29:51111",
+    "user:password@23.254.231.55:80",
+    "user:password@5.161.114.204:4228",
+    "user:password@198.199.86.11:8080",
+    "user:password@84.252.73.132:4444",
+    "user:password@222.89.237.101:9002",
+    "user:password@67.43.227.227:12827",
+    "user:password@141.145.214.176:80",
+    "user:password@201.134.169.214:8205",
+    "user:password@152.26.231.94:9443",
+    "user:password@8.219.97.248:80",
+    "user:password@65.108.207.6:80",
+    "user:password@135.181.154.225:80",
+    "user:password@67.43.227.227:2659",
+    "user:password@20.13.148.109:8080",
+    "user:password@67.43.228.254:7271"
+];
 
-  const serverLink = document.getElementById('server-link').value;
+// Function to generate a random string
+function randomString(length) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
 
-  // Validate server link format
-  const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}(\/[^\s]*)?$/;
-  if (!serverLink || !urlPattern.test(serverLink)) {
-    updateUI("Please enter a valid server link!", "error");
-    return;
-  }
+// Solver class
+class Solver {
+    constructor(apiKey) {
+        this.apiKey = apiKey;
+    }
 
-  // Start generating tokens and attempting to join the server
-  updateUI('Generating tokens and attempting to join the server...', "loading");
-  generateAndJoinTokens(serverLink);
-});
+    async solve(blob, proxy) {
+        try {
+            let formattedProxy = '';
 
-// Function to generate tokens in a loop and attempt to join the server
-function generateAndJoinTokens(serverLink) {
-  const tokenApiUrl = 'https://run.mocky.io/v3/b88bfae0-a26b-49d3-8bf4-17ba902986e3'; // Mocky API URL for token generation
-  const botToken = 'QHszWnXJqO_iSFCNOzOGUAizY2ZZXFj2'; // Your actual bot token
-  const joinApiUrl = `https://discord.com/api/v10/invites/${extractInviteCodeFromLink(serverLink)}`; // Endpoint for joining servers
+            // Handle proxies in the format 'user:password@ip:port'
+            if (proxy.includes('@')) {
+                const [auth, ipPort] = proxy.split('@');
+                const [user, password] = auth.split(':');
+                const [ip, port] = ipPort.split(':');
+                formattedProxy = `http://${user}:${password}@${ip}:${port}`;
+            } else {
+                const [ip, port] = proxy.split(':');
+                formattedProxy = `http://${ip}:${port}`;
+            }
 
-  function generateToken() {
-    return fetch(tokenApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({})
-    }).then(handleFetchResponse)
-      .then(data => data.token); // Adjust based on actual response format
-  }
+            // Simulate getting a code for CAPTCHA solution
+            const code = randomString(10);  // Simulate code; replace with actual CAPTCHA solving logic
+            const encodedCode = encodeURIComponent(code);
+            const mockyUrl = `https://run.mocky.io/v3/b88bfae0-a26b-49d3-8bf4-17ba902986e3?code=${encodedCode}`;
 
-  function joinServer(token) {
-    return fetch(joinApiUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bot ${botToken}`, // Ensure this bot token is valid
-        'Content-Type': 'application/json'
-      }
-    }).then(handleFetchResponse);
-  }
+            const response = await fetch(mockyUrl, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
 
-  function processToken() {
-    generateToken()
-      .then(validToken => {
-        if (validToken) {
-          return joinServer(validToken);
-        } else {
-          throw new Error('Invalid token');
+            const data = await response.json();
+
+            if (!data.solution) {
+                console.log("Error: Missing solution in response.");
+                console.log("Response:", data);
+                return false;
+            }
+
+            const captchaSolution = data.solution;
+            console.log(`Solved captcha: ${captchaSolution.slice(0, 60)}...`);
+            return captchaSolution;
+
+        } catch (error) {
+            console.log(`Error occurred: ${error}`);
+            return false;
         }
-      })
-      .then(() => {
-        updateUI('Successfully joined the server with a valid token!', "success");
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        updateUI('Error with the token or joining the server. Retrying...', "error");
-      })
-      .finally(() => {
-        setTimeout(processToken, 10000); // Retry after 10 seconds
-      });
-  }
-
-  processToken(); // Start the token generation and joining process
+    }
 }
 
-// Helper function to extract invite code from server link
-function extractInviteCodeFromLink(serverLink) {
-  const url = new URL(serverLink);
-  return url.pathname.split('/').pop(); // Adjust based on actual URL structure
+// MailTM class
+class MailTM {
+    constructor() {
+        this.apiBase = "https://api.mail.tm";
+    }
+
+    async getDomain() {
+        const response = await fetch(`${this.apiBase}/domains`);
+        const data = await response.json();
+        return data['hydra:member'][0]['domain'];
+    }
+
+    async createAccount(domain) {
+        const mail = randomString(10).toLowerCase();
+        const password = `${randomString(5)}${Math.floor(Math.random() * 900 + 100)}${["!", "*", "$"][Math.floor(Math.random() * 3)]}`;
+
+        const accountData = {
+            address: `${mail}@${domain}`,
+            password: password
+        };
+
+        const response = await fetch(`${this.apiBase}/accounts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(accountData)
+        });
+
+        const data = await response.json();
+        if (response.status === 201) {
+            return { status: "OK", mail: `${mail}@${domain}`, password: password };
+        } else {
+            return { status: "ERROR", response: data };
+        }
+    }
+
+    async getAccountToken(mail, password) {
+        const loginData = {
+            address: mail.trim(),
+            password: password.trim()
+        };
+
+        const response = await fetch(`${this.apiBase}/token`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(loginData)
+        });
+
+        const data = await response.json();
+        return data.token;
+    }
+
+    async getMail(token) {
+        const response = await fetch(`${this.apiBase}/messages`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return await response.json();
+    }
+
+    async getMailContent(token, messageId) {
+        const response = await fetch(`${this.apiBase}/messages/${messageId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return await response.json();
+    }
 }
 
-// Helper function to update the UI element with the result message
-function updateUI(message, type = "info") {
-  const resultElement = document.getElementById('result');
-  resultElement.innerText = message;
-  resultElement.className = type; // Assumes CSS classes for different types: info, loading, error, success
+// Main function
+async function main() {
+    const apiKey = "https://run.mocky.io/v3/b88bfae0-a26b-49d3-8bf4-17ba902986e3";  // Replace with your actual API key
+    const solver = new Solver(apiKey);
+    const mailTM = new MailTM();
+
+    const domain = await mailTM.getDomain();
+    const mailAccount = await mailTM.createAccount(domain);
+    console.log(`Created mail: ${mailAccount.mail}`);
+
+    if (mailAccount.status === "OK") {
+        const token = await mailTM.getAccountToken(mailAccount.mail, mailAccount.password);
+        console.log(`Got token: ${token}`);
+
+        // Example CAPTCHA blob data, replace with actual blob
+        const blob = "example_blob_data";
+
+        // Randomly select a proxy for this example
+        const proxy = proxies[Math.floor(Math.random() * proxies.length)];
+
+        // Solve CAPTCHA
+        const captchaSolution = await solver.solve(blob, proxy);
+        if (captchaSolution) {
+            console.log(`Captcha solution: ${captchaSolution}`);
+        } else {
+            console.log("Failed to solve CAPTCHA.");
+        }
+    } else {
+        console.log(`Failed to create account: ${mailAccount.response}`);
+    }
 }
 
-// Function to handle the fetch response
-function handleFetchResponse(response) {
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return response.json();
-}
-
-// Function to handle fetch errors
-function handleFetchError(error) {
-  console.error('Error:', error);
-  updateUI('Error generating token or joining the server. Please try again.', "error");
-}
+main();
