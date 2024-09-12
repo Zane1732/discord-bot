@@ -3,20 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Generator</title>
-    <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
+    <title>Roblox Generator by Zane</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+        }
+        .container {
+            padding-top: 50px;
+        }
+        button {
+            background-color: #0f0;
+            color: #000;
+            font-size: 1.2em;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #00ff00;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="title">Roblox Generator</h1>
-        <div class="generator">
-            <button id="generate-btn">Generate Account</button>
-            <p id="generated-account"></p>
-        </div>
-        <div class="footer">
-            <p>This Roblox gen was made by Zane. If you have any issues, DM me on Discord: <strong>zane_ox0</strong></p>
-        </div>
+        <h1>This Roblox Gen was made by Zane</h1>
+        <p>If you have any issues, DM me on Discord: <strong>zane_ox0</strong></p>
+        <button id="generate-btn">Generate</button>
+        <div id="result" class="result"></div>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
